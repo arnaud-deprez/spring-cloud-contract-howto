@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/release" }
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:${verifierVersion}"
+    }
+}
+
+apply plugin: 'org.asciidoctor.convert'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    maven { url "http://repo.spring.io/snapshot" }
+    maven { url "http://repo.spring.io/milestone" }
+    maven { url "http://repo.spring.io/release" }
+}
+
+wrapper {
+    gradleVersion '3.5'
+}
+
+dependencies {
+    asciidoctor "io.spring.asciidoctor:spring-asciidoctor-extensions:0.1.1.RELEASE"
+}
+
+// Documentation tasks
+asciidoctor {
+    sourceDir = file('docs')
+    sources {
+        include 'index.adoc', 'workshops.adoc', 'tutorials/*'
+    }
+    outputDir = file('docs')
+    separateOutputDirs = false
+    resources { }
+    attributes 'source-highlighter': 'prettify'
+
+}
+
+task removeHtml() {
+  doLast {
+      def tree = fileTree(dir: 'docs', include: ['**/*.html'])
+      tree.each {
+        it.delete()
+      }
+  }
+}
+
+asciidoctor.mustRunAfter removeHtml
+
+task generateDocumentation(dependsOn: ["removeHtml", "asciidoctor"]) {
+    group = "Documentation"
+    description = "Creates full documentation for the project"
+}

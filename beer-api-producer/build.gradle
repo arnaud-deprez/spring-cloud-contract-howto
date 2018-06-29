@@ -1,0 +1,68 @@
+version = '0.0.1-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'spring-cloud-contract'
+apply plugin: 'maven-publish'
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:$BOM_VERSION"
+	}
+}
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-starter-web")
+	compile("org.springframework.boot:spring-boot-starter-actuator")
+	compile("org.springframework.cloud:spring-cloud-starter-stream-rabbit")
+
+	testCompile("org.springframework.cloud:spring-cloud-stream-test-support")
+	testCompile("org.springframework.cloud:spring-cloud-starter-contract-verifier")
+}
+
+contracts {
+	packageWithBaseClasses = 'com.powple.poc'
+	baseClassMappings {
+		baseClassMapping(".*intoxication.*", "com.powple.poc.intoxication.BeerIntoxicationBase")
+	}
+
+	//for apiCompatibility
+	if (gradle.startParameter.taskRequests.any { it.args.contains("apiCompatibility") }) {
+		contractsPath = "/"
+		contractDependency {
+			groupId = project.group
+			artifactId = project.name
+			delegate.classifier = "stubs"
+			delegate.version = getProp("latestProductionVersion")
+		}
+		// The JAR with contracts should be taken from Maven local
+		setContractsMode("LOCAL")
+		// Or
+		/*setContractsMode("REMOTE")
+		contractRepository {
+			url = getProp('REPO_WITH_JARS') ?:
+				getProp('REPO_WITH_BINARIES') ?: 'http://localhost:8081/artifactory/libs-release-local'
+		}*/
+	}
+}
+
+test {
+	testLogging {
+		exceptionFormat = 'full'
+	}
+}
+
+task apiCompatibility(type: Test) {
+	description = "Task to run api compatbility tests"
+	testLogging {
+		exceptionFormat = 'full'
+	}
+	include '**/contracts/**'
+}
+
+String getProp(String propName) {
+	return hasProperty(propName) ?
+		(getProperty(propName) ?: System.properties[propName]) : System.properties[propName] ?:
+		System.getenv(propName)
+}

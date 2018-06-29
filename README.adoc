@@ -1,0 +1,279 @@
+= Spring Cloud Contract samples
+
+The goal of this repository is to show by use cases how we can use https://cloud.spring.io/spring-cloud-contract/[Spring Cloud Contract] to validate the compatibility between
+an API provider and one or more consumer by using `Consumer Driven Contract` testing. 
+
+CDC testing is a technique to test whether an API provider and one or many API consumer(s) are compliant with a predefined contract 
+without having to deploy a complete system in order to reduce the end-to-end integration testing that comes with its complexity.
+
+The problem with end-to-end tests is that they often fail for no apparent reason and are very slow. 
+There is nothing more frustrating than seeing that, after running for ten hours, the end-to-end tests have failed due to a typo in the API call.
+So the goal is to minimize the end-to-end tests to the absolutely necessary and perform as much tests as we can in lower level according to the link:https://martinfowler.com/bliki/TestPyramid.html[test pyramid]
+
+Spring Cloud Contract is a framework that can help you to validate contracts without having to run end-to-end test so you have faster feedback.
+This is achieved by using Spring Cloud Contract Verifier with Stub Runner.
+
+image:https://github.com/spring-cloud/spring-cloud-contract/raw/master/docs/src/main/asciidoc/images/Stubs2.png[]
+
+The main purposes of Spring Cloud Contract Verifier with Stub Runner are:
+
+- To ensure that WireMock/Messaging stubs (used when developing the client) do exactly what the actual server-side implementation does.
+- To promote Acceptance Test Driven Development (ATDD) method and Microservices architectural style.
+- To provide a way to publish changes in contracts that are immediately visible on both sides.
+- To generate boilerplate test code to be used on the server side.
+
+It supports both HTTP and message-based interactions.
+
+[IMPORTANT]
+====
+Spring Cloud Contract Verifier’s purpose is NOT to start writing business features in the contracts.
+Assume that we have a business use case of fraud check.
+If a user can be a fraud for 100 different reasons, we would assume that you would create 2 contracts, one for the positive case and one for the negative case.
+Contract tests are used to test contracts between applications and not to simulate full behavior.
+====
+
+[NOTE]
+====
+One of the "problems" with Spring Cloud Contract was that the DSL had to be written in Groovy.
+Even though the contract didn’t require any special knowledge of the language, it became a problem for non-JVM users.
+
+On the producer side, Spring Cloud Contract generates tests in Java or Groovy.
+Of course, it became a problem to use those tests in a non-JVM environment.
+
+Not only do you need to have Java installed, but the tests are generated with a Maven or Gradle plugin, which requires using those build tools.
+More information on this link:https://spring.io/blog/2018/02/13/spring-cloud-contract-in-a-polyglot-world[blog post]
+====
+
+== Content of this repository
+
+This repository contains a subset of link:https://github.com/spring-cloud-samples/spring-cloud-contract-samples[spring-cloud-contract-samples].
+
+These samples were also used in the following presentation. It might help to use the samples.
+
+- link:https://goo.gl/qhVmg3[SlideShare] / link:https://www.youtube.com/watch?v=sAAklvxmPmk[YouTube]
+
+You can also go through the link:https://spring-cloud-samples.github.io/spring-cloud-contract-samples/workshops.html[Spring Cloud Contract Workshops]
+to learn how to use the tool by example.
+
+The aim of this repository is to showcase `spring-cloud-contract` with different test cases that can be setup in CI/CD pipeline.
+
+If you are looking for more advanced samples, please go to the original link:https://github.com/spring-cloud-samples/spring-cloud-contract-samples[spring-cloud-contract-samples] repository.
+
+=== Projects
+
+It has benn voluntary reduced to 2 projects.
+
+==== Producer
+
+The producer application contains contracts for both REST and messaging
+communication. From these contracts tests and stubs will be generated.
+
+The producer in the contract also uses features like usage of common libraries, different
+combination of dynamic properties.
+
+It also uses scenario based contracts. That means that the produced stubs are stateful.
+
+==== Consumer
+
+The consumer application is using the stubs of the producer for both rest and messaging.
+
+It also contains the consumer side of the stateful scenario case. By calling the same endpoint a couple
+ of times we get different responses due to changing state.
+
+== How to build it?
+
+The order should be as follows
+
+- producer (from where we publish the contracts)
+- consumer
+
+If the order is different then your apps will blow up most likely due to missing stubs.
+
+So with gradle, you can run:
+
+```sh
+# clean, build and test the producer and publish its contracts
+./gradlew clean build publishToMavenLocal -p beer-api-producer
+# clean, build and test the consumer with the contracts
+./gradlew clean build -p beer-api-consumer
+```
+
+Or in maven:
+
+```sh
+# clean, build and test the producer and publish its contracts
+./mvnw clean install -pl beer-api-producer
+# clean, build and test the consumer with the contracts
+./mvnw clean test -pl beer-api-consumer
+```
+
+== Spring Cloud Contract developer workflow
+
+Initially link:https://cloud.spring.io/spring-cloud-contract/[Spring Cloud Contract] had to be written in groovy but since the latest release,
+you can also write them in `yaml`, `json` and it also supports link:https://docs.pact.io/[Pact] specification format.
+
+`Spring Cloud Contract` promotes a centralized approach to define contracts where the consumer can define contracts in the provider git repository 
+or if the consumer is not allowed to do so, in an external git repository dedicated for the contracts of this provider.
+
+The first approach is the simplest as your contracts are versioned with your implementation so you don't need to maintain a mapping table between 
+your contracts version and the implementation version.
+That's why we choose to define contract in the provider in producer project.
+
+For the simplicity of the demo, `beer-api-producer` and `beer-api-consumer` resides in the same git repository but ideally, 
+each of them should reside in its own repository and that's what we will consider in the following steps.
+
+=== Consumer side
+
+1. Develop your feature in `beer-api-consumer` in TDD.
+    1. Start doing TDD by writing a test for your feature.
+    1. Write the missing implementation.
+1. Define the contract proposal in `beer-api-producer`.
+    1. Clone the `beer-api-producer` service repository locally.
+    1. Define the contract locally in the repo of `beer-api-producer` service.
+    1. Add the `Spring Cloud Contract Verifier` plugin (gradle or maven plugin).
+1. Test `beer-api-consumer` against the previously generated contracts.
+    1. Configure `Spring Cloud Contract Stub Runner` (test dependency) to retrieve the contracts from maven local repository.
+    1. Run the integration tests with the Stub Runner.
+1. File a pull request `beer-api-producer` once the tests passed.
+
+=== Producer side
+
+[start=5]
+. Create an initial implementation.
+. Take over the pull request.
+. Write the missing implementation.
+. Deploy your app.
+
+=== Back to consumer side
+
+[start=9]
+. Merge your feature branch into master.
+. Work online: consume contracts from remote repository instead of local.
+
+== Spring Cloud Contract in CI/CD
+
+In a microservice world, each application should be autonomous and so independently deployable.
+
+So during every build, we must check if the application is consistent with its current contracts and the contracts that are currently running on production.
+This means that we cannot do any breaking changes.
+
+Actually, any breaking change can be implemented as a set (in the context of the API, a set always means two) of non-breaking changes.
+For example, if you want to change the type of the field from Date to DateTime you use the following pattern:
+
+. Expose the `DateTime` field in the API. On production you now return both fields, however, the contract now guarantees only the new one.
+. Wait until all client applications migrate to the new field. It’s pretty fast, as all tests will show only the `DateTime` field (contract protection) and without switching to the new field, you won’t be able to compile the application (CDC test fails).
+. Remove the `Date` field.
+
+=== API provider side
+
+To be more confident when we will deliver a new version of the provider in production we need to ensure at build time that the latest API
+remains compatible with the one already deployed in production.
+
+So in CDC, it means that all the latest CDC tests and the old CDC tests from the version deployed in production should pass at build time.
+
+[cols="^,^,^", options="header"]
+.API provider - CDC tests
+|===
+|                     | Latest    | Production
+| *Contract verifier* | Build     | Build
+|===
+
+Technically, it means we will verify the contracts by sending requests as the latest API consumers and the production API consumer will do.
+
+As we are in the provider and as its git repository contains all the latest contracts from all its consumer, testing the latest CDC tests is performed by
+running `./mvnw test -pl beer-api-producer` or `./gradlew check -p beer-api-producer` whether you are using maven or gradle.
+
+To test against the API compatibility version in production, you can run:
+
+- In maven
+
+```sh
+./mvnw test -PapiCompatibility -pl beer-api-producer -Dlatest.producertion.version=<your_version>
+```
+
+- In gradle
+
+```sh
+./gradlew apiCompatibility -p beer-api-producer -DlatestProducertionVersion=<your_version>
+```
+
+==== Playground
+
+If you didn't modify the code, `beer-api-consumer` and `beer-api-producer` should be in version `0.0.1-SNAPSHOT`.
+
+In this scenario, we will consider `beer-api-producer:0.0.1-SNAPSHOT` to be deployed in production environment and
+we will try to make the API compatibility test fail by introducing a breaking change.
+We will also use the local maven repository for the sake of simplicity.
+
+. Publish the contract of `beer-api-producer:0.0.1-SNAPSHOT`
+
+    ./mvnw clean install -pl beer-api-producer
+    # Or
+    ./gradlew clean build publishToMavenLocal -p beer-api-producer
+
+. Increment the version of `beer-api-producer` to `0.0.2-SNAPSHOT` and make a breaking change
+You can checkout the branch `git checkout producer-breaking-change-1` as an example.
+Then try to run:
+
+    ./mvnw clean test -pl beer-api-producer
+    # Or
+    ./gradlew clean check -p beer-api-producer
++
+Some tests should fail.
+
+. Adapt the contracts to make tests passed again.
+You can checkout the branch `git checkout producer-breaking-change-2` as an example.
+Rerun the previous step and now the tests should pass.
+. Then, run the API compatibility check against `beer-api-producer:0.0.1-SNAPSHOT`
+
+    ./mvnw test -PapiCompatibility -pl beer-api-producer -Dlatest.production.version.version=0.0.1-SNAPSHOT
+    # Or
+    ./gradlew apiCompatibility -p beer-api-producer -DlatestProductionVersion=0.0.1-SNAPSHOT
++
+And now some tests fail again because the new producer API is not backward compatible with `0.0.1-SNAPSHOT`.
+
+You probably noticed the tests failure cause is `NullPointerException`.
+It is because when the consumer does not send the `yearsOld` value, this value is null on the server side and it is currently not handled correctly.
+Ideally, if this value is required, you should have another contract stating that if this value is not sent by the consumer,
+then the provider should reply with an error 400 like and handle null value accordingly.
+
+=== API consumer side
+
+On the consumer side, we need to perform similar tests but instead of mocking the consumer request, we will verify the contracts against stubs
+from the latest as describe in the following table:
+
+The tests are by default already configured to retrieve the latest stubs, so you can run these tests with
+`./mvnw test -pl beer-api-consumer` or `./gradlew check -p beer-api-consumer` whether you are using maven or gradle.
+
+Theoretically, if you follow the development workflow, you only merge your feature branch on the consumer side when the feature is implemented on the provider side.
+Assuming you will deliver your API provider in production soon (in minutes) after it has been released, you should not have this issue.
+
+Well, it's not always working like that especially if you have more than one testing environment (performance, user acceptance, etc.).
+In this context, the latest provider might be rejected in one environment and so it takes more time to go to production.
+And now the question is how to ensure API compatibility between the latest released consumer and the already deployed provider ?
+
+Testing the API consumer against the latest production stubs will let you known if you can deploy your client to production
+(this can be transposed to other environment) or not.
+It is especially important when you deal with breaking change in 2 non breaking changes (see above) because if these tests fail,
+it means the stub runner didn't find any matching contract and so by transitivity it means the API producer deployed in production
+does not implement the latest API you are using.
+
+[cols="^,^,^", options="header"]
+.API consumer - CDC tests
+|===
+|             | Latest    | Production
+| *Stubs*     | Build     | Before Deployment
+|===
+
+Unfortunately, the latter is not as straightforward to setup as in the producer side.
+An issue has been raised for this https://github.com/spring-cloud/spring-cloud-contract/issues/686.
+
+== Conclusion
+
+link:https://cloud.spring.io/spring-cloud-contract/[Spring Cloud Contract] is - even if it is already in version 2.0.0.RELEASE - still young and under active development compare to
+link:https://docs.pact.io[Pact] but it has the merit to propose a different workflow where more collaboration is required between the consumer and the producer.
+
+I hope this how-to can better help you to understand what is CDC testing, its purpose and how it is implemented in link:https://cloud.spring.io/spring-cloud-contract/[Spring Cloud Contract].
+
+Of course in real life, applications are most of the time API producer and API consumer, so the configuration might be slightly different in this
+situation but the principle remains the same.
