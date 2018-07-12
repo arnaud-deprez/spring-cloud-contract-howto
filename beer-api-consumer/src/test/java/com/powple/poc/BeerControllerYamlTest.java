@@ -1,6 +1,7 @@
 package com.powple.poc;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureJsonTesters
 //remove::start[]
 // example of usage with fixed port
-//@AutoConfigureStubRunner(workOffline = true, ids = "com.example:beer-api-producer:+:stubs:8090")
-@AutoConfigureStubRunner(stubsMode = StubRunnerProperties.StubsMode.LOCAL,
-		ids = "com.powple.poc:beer-api-producer")
+@AutoConfigureStubRunner(stubsMode = StubRunnerProperties.StubsMode.LOCAL, ids = "com.powple.poc:beer-api-producer:${stubs.com.powple.poc.beer-api-producer.version +}:stubs")
 //remove::end[]
 @DirtiesContext
 //@org.junit.Ignore

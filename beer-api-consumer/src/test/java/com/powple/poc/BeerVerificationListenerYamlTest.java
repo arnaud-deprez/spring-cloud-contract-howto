@@ -20,11 +20,9 @@ import static org.assertj.core.api.BDDAssertions.then;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 //remove::start[]
-@AutoConfigureStubRunner(stubsMode = StubRunnerProperties.StubsMode.LOCAL,
-		ids = "com.powple.poc:beer-api-producer")
+@AutoConfigureStubRunner(stubsMode = StubRunnerProperties.StubsMode.LOCAL, ids = "com.powple.poc:beer-api-producer:${stubs.com.powple.poc.beer-api-producer.version +}:stubs")
 //remove::end[]
 @DirtiesContext
-//@org.junit.Ignore
 public class BeerVerificationListenerYamlTest extends AbstractTest {
 
 	//remove::start[]

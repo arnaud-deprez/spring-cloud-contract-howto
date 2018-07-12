@@ -1,7 +1,7 @@
 package com.powple.poc;
 
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +9,19 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.stubrunner.StubFinder;
+import org.springframework.cloud.contract.stubrunner.StubTrigger;
 import org.springframework.cloud.contract.stubrunner.junit.StubRunnerRule;
+import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties;
+import org.springframework.cloud.contract.verifier.messaging.boot.AutoConfigureMessageVerifier;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,17 +34,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
 @DirtiesContext
-//@org.junit.Ignore
 public class BeerControllerWithJUnitTest extends AbstractTest {
+
+	//remove::start[]
+	// tag::rule[]
+	@ClassRule
+	public static StubRunnerRule rule = new StubRunnerRule()
+			.downloadStub("com.powple.poc","beer-api-producer", AbstractTest.getVersion("com.powple.poc","beer-api-producer"))
+			.stubsMode(StubRunnerProperties.StubsMode.LOCAL);
+	// end:rule[]
 
 	@Autowired MockMvc mockMvc;
 	@Autowired BeerController beerController;
-	//remove::start[]
-	// tag::rule[]
-	@Rule public StubRunnerRule rule = new StubRunnerRule()
-			.downloadStub("com.powple.poc","beer-api-producer")
-			.stubsMode(StubRunnerProperties.StubsMode.LOCAL);
-	// end:rule[]
+
 	//tag::setup[]
 	@Before
 	public void setupPort() {
