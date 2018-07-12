@@ -37,10 +37,10 @@ interface PersonCheckingService {
 }
 
 class PersonToCheck {
-	public Integer age;
+	public Integer yearsOld;
 
-	public PersonToCheck(Integer age) {
-		this.age = age;
+	public PersonToCheck(Integer yearsOld) {
+		this.yearsOld = yearsOld;
 	}
 
 	public PersonToCheck() {

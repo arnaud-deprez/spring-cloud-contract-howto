@@ -36,7 +36,7 @@ public abstract class BeerRestBase {
 	}
 
 	private ArgumentMatcher<PersonToCheck> oldEnough() {
-		return argument -> argument.age >= 20;
+		return argument -> argument.yearsOld >= 20;
 	}
 	//remove::end[]
 }

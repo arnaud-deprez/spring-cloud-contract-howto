@@ -21,7 +21,7 @@ public class AgeCheckingPersonCheckingService implements PersonCheckingService {
 	public Boolean shouldGetBeer(PersonToCheck personToCheck) {
 		//remove::start[]
 		//tag::impl[]
-		boolean shouldGetBeer = personToCheck.age >= 20;
+		boolean shouldGetBeer = personToCheck.yearsOld >= 20;
 		source.output().send(MessageBuilder.withPayload(new Verification(shouldGetBeer)).build());
 		return shouldGetBeer;
 		//end::impl[]
