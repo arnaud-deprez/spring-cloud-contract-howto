@@ -13,12 +13,12 @@ request:
   method: POST
   url: /check
   body:
-    age: 10
+    yearsOld: 10
   headers:
     Content-Type: application/json
   matchers:
     body:
-      - path: "$.age"
+      - path: "$.yearsOld"
         type: by_regex
         value: "[0-1][0-9]"
 response:
