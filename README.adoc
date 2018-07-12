@@ -124,17 +124,17 @@ each of them should reside in its own repository and that's what we will conside
 
 === Consumer side
 
-1. Develop your feature in `beer-api-consumer` in TDD.
-    1. Start doing TDD by writing a test for your feature.
-    1. Write the missing implementation.
-1. Define the contract proposal in `beer-api-producer`.
-    1. Clone the `beer-api-producer` service repository locally.
-    1. Define the contract locally in the repo of `beer-api-producer` service.
-    1. Add the `Spring Cloud Contract Verifier` plugin (gradle or maven plugin).
-1. Test `beer-api-consumer` against the previously generated contracts.
-    1. Configure `Spring Cloud Contract Stub Runner` (test dependency) to retrieve the contracts from maven local repository.
-    1. Run the integration tests with the Stub Runner.
-1. File a pull request `beer-api-producer` once the tests passed.
+. Develop your feature in `beer-api-consumer` in TDD.
+.. Start doing TDD by writing a test for your feature.
+.. Write the missing implementation.
+. Define the contract proposal in `beer-api-producer`.
+.. Clone the `beer-api-producer` service repository locally.
+.. Define the contract locally in the repo of `beer-api-producer` service.
+.. Add the `Spring Cloud Contract Verifier` plugin (gradle or maven plugin).
+. Test `beer-api-consumer` against the previously generated contracts.
+.. Configure `Spring Cloud Contract Stub Runner` (test dependency) to retrieve the contracts from maven local repository.
+.. Run the integration tests with the Stub Runner.
+. File a pull request `beer-api-producer` once the tests passed.
 
 === Producer side
 
