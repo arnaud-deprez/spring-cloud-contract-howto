@@ -6,7 +6,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'spring-cloud-contract'
 apply plugin: 'maven-publish'
 
-sourceCompatibility = 11
+sourceCompatibility = 1.8
 
 dependencyManagement {
 	imports {
@@ -15,12 +15,12 @@ dependencyManagement {
 }
 
 dependencies {
-	compile("org.springframework.boot:spring-boot-starter-web")
-	compile("org.springframework.boot:spring-boot-starter-actuator")
-	compile("org.springframework.cloud:spring-cloud-starter-stream-rabbit")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.cloud:spring-cloud-starter-stream-rabbit")
 
-	testCompile("org.springframework.cloud:spring-cloud-stream-test-support")
-	testCompile("org.springframework.cloud:spring-cloud-starter-contract-verifier")
+	testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
+	testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
 }
 
 contracts {
