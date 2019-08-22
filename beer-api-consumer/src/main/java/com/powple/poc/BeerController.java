@@ -14,6 +14,7 @@ import java.net.URI;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 @RestController
 class BeerController {

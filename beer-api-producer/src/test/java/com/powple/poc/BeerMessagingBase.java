@@ -15,7 +15,9 @@ import javax.inject.Inject;
 //remove::end[]
 import java.util.concurrent.TimeUnit;
 
-@RunWith(SpringRunner.class)
+/**
+ * @author Arnaud Deprez
+ */
 @SpringBootTest(classes = ProducerApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 //remove::start[]
 @AutoConfigureMessageVerifier

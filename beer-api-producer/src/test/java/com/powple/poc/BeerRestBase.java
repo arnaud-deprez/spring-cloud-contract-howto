@@ -17,6 +17,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 
+/**
+ * @author Arnaud Deprez
+ */
 @RunWith(MockitoJUnitRunner.class)
 public abstract class BeerRestBase {
 	//remove::start[]

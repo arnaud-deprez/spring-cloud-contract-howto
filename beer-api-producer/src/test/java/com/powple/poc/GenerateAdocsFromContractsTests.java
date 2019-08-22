@@ -19,6 +19,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
+/**
+ * @author Arnaud Deprez
+ */
 @RunWith(SpringRunner.class)
 public class GenerateAdocsFromContractsTests {
 

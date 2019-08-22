@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 @Service
 class NoOpResponseProvider implements ResponseProvider {

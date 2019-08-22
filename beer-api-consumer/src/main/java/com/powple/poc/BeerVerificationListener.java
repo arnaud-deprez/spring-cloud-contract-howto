@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 @Component
 class BeerVerificationListener {

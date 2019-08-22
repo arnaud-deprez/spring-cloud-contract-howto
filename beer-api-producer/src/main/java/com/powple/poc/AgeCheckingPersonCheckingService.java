@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 @Service
 public class AgeCheckingPersonCheckingService implements PersonCheckingService {

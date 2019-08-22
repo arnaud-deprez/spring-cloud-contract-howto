@@ -21,6 +21,8 @@ import static com.powple.poc.intoxication.DrunkLevel.WASTED;
 
 /**
  * Tests for the scenario based stub
+ *
+ * @author Arnaud Deprez
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = BeerIntoxicationBase.Config.class)

@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 @RestController
 class IntoxicationController {

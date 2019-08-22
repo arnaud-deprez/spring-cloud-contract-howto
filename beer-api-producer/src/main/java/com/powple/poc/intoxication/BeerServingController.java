@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Scenario based controller
+ *
+ * @author Arnaud Deprez
  */
 @RestController
 public class BeerServingController {

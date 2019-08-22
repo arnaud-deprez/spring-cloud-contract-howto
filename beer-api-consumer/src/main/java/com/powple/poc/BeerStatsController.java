@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 @RestController
 class BeerStatsController {
@@ -31,11 +32,9 @@ class BeerStatsController {
 	public String howManyHaveIDrankAlready(@RequestBody StatsRequest statsRequest) throws MalformedURLException {
 		//remove::start[]
 		ResponseEntity<StatsResponse> response = this.restTemplate.exchange(
-				RequestEntity
-						.post(URI.create("http://localhost:" + port + "/stats"))
-						.contentType(MediaType.APPLICATION_JSON)
-						.body(new StatsRequest(statsRequest.getName())),
-				StatsResponse.class);
+			RequestEntity.post(URI.create("http://localhost:" + port + "/stats"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(new StatsRequest(statsRequest.getName())), StatsResponse.class);
 		return response.getBody().getText() + ". You've drank <" + response.getBody().getQuantity() + "> beers";
 		//remove::end[return]
 	}

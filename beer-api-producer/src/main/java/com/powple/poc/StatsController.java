@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 @RestController
 public class StatsController {

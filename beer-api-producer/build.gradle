@@ -6,6 +6,8 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'spring-cloud-contract'
 apply plugin: 'maven-publish'
 
+sourceCompatibility = 11
+
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springcloud_version}"

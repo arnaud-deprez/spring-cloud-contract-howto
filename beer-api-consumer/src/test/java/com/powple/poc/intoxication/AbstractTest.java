@@ -7,6 +7,7 @@ import org.springframework.boot.test.json.JacksonTester;
 
 /**
  * @author Marcin Grzejszczak
+ * @author Arnaud Deprez
  */
 public abstract class AbstractTest {
 
